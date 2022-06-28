@@ -1,25 +1,56 @@
+import { format, formatDistanceToNow } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
+
 import { Avatar } from '../Avatar';
 import { Comment } from '../Comment';
+
 import styles from './post.module.css';
 
-export function Post() {
+export function Post({ author, content, publishedAt }) {
+  const publishedDateFormatted = format(
+    publishedAt,
+    "d 'de' LLLL 'às' HH:mm'h'",
+    {
+      locale: ptBR,
+    }
+  );
+
+  const publishedDateDistanceToNow = formatDistanceToNow(publishedAt, {
+    locale: ptBR,
+    addSuffix: true,
+  });
+
   return (
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <Avatar src='https://github.com/gusprado.png' />
+          <Avatar src={author.avatarUrl} />
           <div className={styles.authorInfo}>
-            <strong>Gus Prado</strong>
-            <span>Web developer</span>
+            <strong>{author.name}</strong>
+            <span>{author.role}</span>
           </div>
         </div>
 
-        <time title='23 de Junho 20:40' dateTime='2022-06-23 20:40:00'>
-          Publicado há 1h
+        <time
+          title={publishedDateFormatted}
+          dateTime={publishedAt.toISOString()}
+        >
+          {publishedDateDistanceToNow}
         </time>
       </header>
 
       <div className={styles.content}>
+        {content.map((line) => {
+          if (line === 'paragraph') {
+            return <p>{line.content}</p>;
+          } else if (line === 'link') {
+            return (
+              <p>
+                <a href='#'>{line.content}</a>
+              </p>
+            );
+          }
+        })}
         <p>Fala galeraa 👋 </p>
         <p>
           Acabei de subir mais um projeto no meu portifa. É um projeto que fiz
